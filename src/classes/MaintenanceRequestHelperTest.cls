@@ -18,6 +18,21 @@ public with sharing class MaintenanceRequestHelperTest {
 
         insert routineMaitenance;
 
+        // this standard product object is renamed to equipment by the tech requirements
+        Product2 equipment = new Product2();
+        equipment.Description = 'Spark plugs';
+        equipment.Cost__c = 100;
+        equipment.Current_Inventory__c = 301;
+        equipment.Lifespan_Months__c = 12;
+        equipment.Maintenance_Cycle__c = 1;
+        equipment.ProductCode = 'sparkPlugs';
+        equipment.Replacement_Part__c = true;
+        equipment.Warehouse_SKU__c = '18593425';
+
+        Equipment_Maintenance_Item__c equipmentMaintenanceItem = new Equipment_Maintenance_Item__c();
+        equipmentMaintenanceItem.Equipment__c = equipment.Id;
+
+
         Case repair = new Case();
         repair.Type = MaintenanceRequestHelper.CASE_TYPE_REPAIR;
         repair.Subject = 'Test Repair';
