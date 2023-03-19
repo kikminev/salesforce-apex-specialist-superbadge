@@ -1,6 +1,6 @@
-@isTest
+@IsTest
 private class CreateDefaultDataTest {
-    @isTest
+    @IsTest
     static void createData_test(){
         Test.startTest();
         CreateDefaultData.createDefaultData();
@@ -16,7 +16,7 @@ private class CreateDefaultDataTest {
 
     }
 
-    @isTest
+    @IsTest
     static void updateCustomSetting_test(){
         How_We_Roll_Settings__c	customSetting = How_We_Roll_Settings__c.getOrgDefaults();
         customSetting.Is_Data_Created__c = false;

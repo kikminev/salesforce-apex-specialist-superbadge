@@ -1,5 +1,5 @@
 public with sharing class CreateDefaultData{
-    Static Final String TYPE_ROUTINE_MAINTENANCE = 'Routine Maintenance';
+    static final String TYPE_ROUTINE_MAINTENANCE = 'Routine Maintenance';
     //gets value from custom metadata How_We_Roll_Settings__mdt to know if Default data was created
     @AuraEnabled
     public static Boolean isDataCreated() {
@@ -37,10 +37,10 @@ public with sharing class CreateDefaultData{
 
     public static List<Product2> createEquipment(){
         List<Product2> equipments = new List<Product2>();
-        equipments.add(new Product2(Warehouse_SKU__c = '55d66226726b611100aaf741',name = 'Generator 1000 kW', Replacement_Part__c = true,Cost__c = 100 ,Maintenance_Cycle__c = 100));
-        equipments.add(new Product2(name = 'Fuse 20B',Replacement_Part__c = true,Cost__c = 1000, Maintenance_Cycle__c = 30  ));
-        equipments.add(new Product2(name = 'Breaker 13C',Replacement_Part__c = true,Cost__c = 100  , Maintenance_Cycle__c = 15));
-        equipments.add(new Product2(name = 'UPS 20 VA',Replacement_Part__c = true,Cost__c = 200  , Maintenance_Cycle__c = 60));
+        equipments.add(new Product2(Warehouse_SKU__c = '55d66226726b611100aaf741',Name = 'Generator 1000 kW', Replacement_Part__c = true,Cost__c = 100 ,Maintenance_Cycle__c = 100));
+        equipments.add(new Product2(Name = 'Fuse 20B',Replacement_Part__c = true,Cost__c = 1000, Maintenance_Cycle__c = 30  ));
+        equipments.add(new Product2(Name = 'Breaker 13C',Replacement_Part__c = true,Cost__c = 100  , Maintenance_Cycle__c = 15));
+        equipments.add(new Product2(Name = 'UPS 20 VA',Replacement_Part__c = true,Cost__c = 200  , Maintenance_Cycle__c = 60));
         insert equipments;
         return equipments;
         
