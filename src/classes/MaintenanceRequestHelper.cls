@@ -5,11 +5,11 @@ public with sharing class MaintenanceRequestHelper {
     public final static String CASE_TYPE_REPAIR = 'Repair',
             CASE_TYPE_ROUTINE_MAINTENANCE = 'Routine Maintenance';
 
-    public static void createFutureRepairChecks(List<Case> requestsAfterUpdate, Map<Id, Case> maintenanceRquestBeforeUpdate) {
+    public static void createFutureRepairChecks(List<Case> requestsAfterUpdate, Map<Id, Case> maintenanceRequestBeforeUpdate) {
         Set<Id> closedRequestIds = new Set<Id>();
 
         for (Case maintenanceRequest : requestsAfterUpdate) {
-            if (maintenanceRequest.Status == CASE_STATUS_CLOSED && maintenanceRquestBeforeUpdate.get(maintenanceRequest.Id).Status != CASE_STATUS_CLOSED
+            if (maintenanceRequest.Status == CASE_STATUS_CLOSED && maintenanceRequestBeforeUpdate.get(maintenanceRequest.Id).Status != CASE_STATUS_CLOSED
                     && (maintenanceRequest.Type == CASE_TYPE_REPAIR || maintenanceRequest.Type == CASE_TYPE_ROUTINE_MAINTENANCE)
                     ) {
                 closedRequestIds.add(maintenanceRequest.Id);
@@ -23,7 +23,10 @@ public with sharing class MaintenanceRequestHelper {
         Map<Id, List<Equipment_Maintenance_Item__c>> equipmentMaintenanceItemsByRequestId = getEquipmentMaintenanceItemsByRequestsIds(closedRequestIds);
         Map<Id, Product2> equipmentById = getEquipment(closedRequestIds);
 
+        List<Case> futureRoutineCheckupForCreation = new List<Case>();
         List<Equipment_Maintenance_Item__c> equipmentMaintenanceItemsForDuplication = new List<Equipment_Maintenance_Item__c>();
+        Map<String, Id> vehicleToMaintenanceRequestId = new Map<String, Id>();
+
         for (Case maintenanceRequest : requestsAfterUpdate) {
             if (!closedRequestIds.contains(maintenanceRequest.Id)) {
                 continue;
@@ -31,12 +34,11 @@ public with sharing class MaintenanceRequestHelper {
 
             // get all equipment Maintenance Items connected to single Maintenance Request
             List<Equipment_Maintenance_Item__c> equipmentMaintenanceItems = equipmentMaintenanceItemsByRequestId.get(maintenanceRequest.Id);
-            List<Product2> equipmentInSingleMR = new List<Product2>();
 
             Integer shortestMaintenanceCycle = 0;
             for (Equipment_Maintenance_Item__c item : equipmentMaintenanceItems) {
                 Product2 equipment = equipmentById.get(item.Equipment__c);
-                if (equipment.Maintenance_Cycle__c < shortestMaintenanceCycle) {
+                if (equipment.Maintenance_Cycle__c < shortestMaintenanceCycle || shortestMaintenanceCycle == 0) {
                     shortestMaintenanceCycle = (Integer) equipment.Maintenance_Cycle__c;
                 }
             }
@@ -48,7 +50,15 @@ public with sharing class MaintenanceRequestHelper {
             futureRoutineCheckup.Date_Reported__c = System.today();
             futureRoutineCheckup.Date_Due__c = System.today().addDays(shortestMaintenanceCycle);
 
-//            insert futureRoutineCheckup;
+            futureRoutineCheckupForCreation.add(futureRoutineCheckup);
+            vehicleToMaintenanceRequestId.put(maintenanceRequest.Vehicle__c, maintenanceRequest.Id);
+        }
+
+        insert futureRoutineCheckupForCreation;
+
+        for (Case futureRoutineCheckup : futureRoutineCheckupForCreation) {
+            List<Equipment_Maintenance_Item__c> equipmentMaintenanceItems = equipmentMaintenanceItemsByRequestId.get(vehicleToMaintenanceRequestId.get(futureRoutineCheckup.Vehicle__c));
+
 
             for (Equipment_Maintenance_Item__c item : equipmentMaintenanceItems) {
                 Equipment_Maintenance_Item__c duplicatedItem = item.clone();
@@ -57,7 +67,7 @@ public with sharing class MaintenanceRequestHelper {
             }
         }
 
-//        insert equipmentMaintenanceItemsForDuplication;
+        insert equipmentMaintenanceItemsForDuplication;
     }
 
     /*
@@ -68,6 +78,7 @@ public with sharing class MaintenanceRequestHelper {
         List<Equipment_Maintenance_Item__c> equipmentMaintenanceItems = [SELECT Id, Maintenance_Request__c, Quantity__c, Equipment__c FROM Equipment_Maintenance_Item__c WHERE Maintenance_Request__c IN :maintenanceRequestsIds];
 
         if (equipmentMaintenanceItems.size() == 0) {
+
             return null;
         }
 
