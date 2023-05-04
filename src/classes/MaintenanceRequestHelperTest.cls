@@ -133,22 +133,17 @@ public with sharing class MaintenanceRequestHelperTest {
         }
     }
 
-//    @IsTest
-//    public static void testCreatingFutureCheckupsForRepairWhenItCloses() {
-//        Vehicle__c vehicle2 = [SELECT Id FROM Vehicle__c WHERE Name =  'HowWeRoll Recreational Vehicle 2'];
-//        Case repair = [SELECT Id, Status, Vehicle__c FROM Case WHERE Type = :MaintenanceRequestHelper.CASE_TYPE_REPAIR];
-//        repair.Status = MaintenanceRequestHelper.CASE_STATUS_CLOSED;
-//
-//        update repair;
-//
-//        List<Case> automaticallyCreatedFutureRoutineCheckup = [SELECT Id, Status, Vehicle__c, Type FROM Case WHERE Subject = 'Automatically Scheduled Routine Maintenance'];
-//
-//        System.assertEquals(1, automaticallyCreatedFutureRoutineCheckup.size(), '1 new routine checkup should be created - scheduled in the future');
-//
-//        Case routineCheckup = automaticallyCreatedFutureRoutineCheckup[0];
-//
-//        System.assertEquals(MaintenanceRequestHelper.CASE_TYPE_ROUTINE_MAINTENANCE, routineCheckup.Type);
-//        System.assertEquals(repair.Vehicle__c, routineCheckup.Vehicle__c);
-//        System.assertEquals(vehicle2.Id, routineCheckup.Vehicle__c);
-//    }
+    @IsTest
+    public static void testCreatingFutureCheckupsForRepairWhenItCloses() {
+        Vehicle__c vehicle2 = [SELECT Id FROM Vehicle__c WHERE Name =  'Vehicle 2'];
+        List<Case> repairs = [SELECT Id, Status, Vehicle__c FROM Case WHERE Type = :MaintenanceRequestHelper.CASE_TYPE_ROUTINE_MAINTENANCE];
+        repairs[0].Description = 'some test description';
+        repairs[1].Status = MaintenanceRequestHelper.CASE_STATUS_CLOSED;
+
+        update repairs;
+
+        List<Case> automaticallyCreatedFutureRoutineCheckup = [SELECT Id, Status, Vehicle__c, Type FROM Case WHERE Subject = 'Automatically Scheduled Routine Maintenance'];
+
+        System.assertEquals(1, automaticallyCreatedFutureRoutineCheckup.size(), '1 routine checkup should be created - scheduled in the future');
+    }
 }

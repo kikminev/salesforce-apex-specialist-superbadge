@@ -77,10 +77,6 @@ public with sharing class MaintenanceRequestHelper {
     private static Map<Id, List<Equipment_Maintenance_Item__c>> getEquipmentMaintenanceItemsByRequestsIds(Set<Id> maintenanceRequestsIds) {
         List<Equipment_Maintenance_Item__c> equipmentMaintenanceItems = [SELECT Id, Maintenance_Request__c, Quantity__c, Equipment__c FROM Equipment_Maintenance_Item__c WHERE Maintenance_Request__c IN :maintenanceRequestsIds];
 
-        if (equipmentMaintenanceItems.size() == 0) {
-
-            return null;
-        }
 
         // create a map of lists of Equipment Maintenance Items by Request Id
         Map<Id, List<Equipment_Maintenance_Item__c>> equipmentItemsByMaintenanceRequestId = new Map<Id, List<Equipment_Maintenance_Item__c>>();
@@ -98,10 +94,6 @@ public with sharing class MaintenanceRequestHelper {
 
     private static Map<Id, Product2> getEquipment(Set<Id> maintenanceRequestsIds) {
         List<Equipment_Maintenance_Item__c> equipmentMaintenanceItems = [SELECT Id, Equipment__c FROM Equipment_Maintenance_Item__c WHERE Maintenance_Request__c IN :maintenanceRequestsIds];
-
-        if (equipmentMaintenanceItems.size() == 0) {
-            return null;
-        }
 
         Set<Id> equipmentIds = new Set<Id>();
         for (Equipment_Maintenance_Item__c item : equipmentMaintenanceItems) {

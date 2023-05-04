@@ -13,6 +13,7 @@ public class AddPrimaryContact implements Queueable {
         this.contact = contact;
         this.state = state;
     }
+
     public void execute(QueueableContext context) {
         List<Account> accounts = [SELECT Id FROM Account WHERE BillingState = :state];
 

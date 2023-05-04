@@ -1,3 +1,5 @@
-public with sharing class WarehouseSyncSchedule {
-    // implement scheduled code here
+global with sharing class WarehouseSyncSchedule implements Schedulable {
+    global void execute(SchedulableContext schedulableContext) {
+        System.enqueueJob(new WarehouseCalloutService());
+    }
 }
